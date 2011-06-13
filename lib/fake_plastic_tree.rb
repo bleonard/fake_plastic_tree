@@ -2,6 +2,7 @@ require 'base64'
 require 'braintree'
 
 require 'fake_plastic_tree/account'
+require 'fake_plastic_tree/responses'
 
 require 'fake_plastic_tree/create_customer'
 require 'fake_plastic_tree/create_card'
@@ -14,6 +15,7 @@ require 'fake_plastic_tree/prior_auth_void'
 module FakePlasticTree
   class Gateway
     extend Account
+    extend Responses
     
     extend CreateCustomer
     extend CreateCard
@@ -23,23 +25,7 @@ module FakePlasticTree
     extend PriorAuthVoid
 
     protected
-
-    def self.transaction_success(response)
-      Braintree::SuccessfulResult.new(:transaction => Braintree::Transaction._new(Braintree::Configuration.gateway, response[:transaction]))
-    end
-
-    def self.customer_success(response)
-      Braintree::SuccessfulResult.new(:customer => Braintree::Customer._new(Braintree::Configuration.gateway, response[:customer]))
-    end
-
-    def self.card_success(response)
-      Braintree::SuccessfulResult.new(:credit_card => Braintree::CreditCard._new(Braintree::Configuration.gateway, response[:credit_card]))
-    end
-
-    def self.any_error(response)
-      Braintree::ErrorResult.new(Braintree::Configuration.gateway, response[:api_error_response])
-    end
-
+    
     def self.encode_prop(hash, keys)
       prop = {}
       prop[:time] ||= Time.now.to_i
