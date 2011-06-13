@@ -2,6 +2,7 @@ require 'base64'
 require 'braintree'
 
 require 'fake_plastic_tree/create_customer'
+require 'fake_plastic_tree/create_card'
 require 'fake_plastic_tree/auth_capture'
 require 'fake_plastic_tree/prior_auth_capture'
 require 'fake_plastic_tree/prior_auth_void'
@@ -10,14 +11,10 @@ require 'fake_plastic_tree/prior_auth_void'
 module FakePlasticTree
   class Gateway
     extend CreateCustomer
+    extend CreateCard
     extend AuthCapture
     extend PriorAuthCapture
     extend PriorAuthVoid
-
-    def self.create_card(hash)
-      response = response_create_card(hash)
-      card_success(response)
-    end
     
     class << self
       attr_accessor :fail_next_auth
@@ -235,25 +232,6 @@ module FakePlasticTree
                                       }
                               }
                       }
-      }
-    end
-
-    def self.response_create_card(hash)
-      time = Time.now
-
-      credit_card = credit_card_from_hash(hash)
-      customer_id = hash[:customer_id]
-
-      {:credit_card=>
-               {:cardholder_name=>nil, :card_type=>"Visa", :last_4=>"0026", :expired=>false,
-                :billing_address=>
-                        {:postal_code=>"60622", :country_code_alpha3=>"USA", :company=>nil, :first_name=>"Jenna", :country_code_alpha2=>"US", :country_code_numeric=>"840",
-                         :created_at=>time, :customer_id=>customer_id, :last_name=>"Smith", :street_address=>"1 E Main St", :locality=>"Chicago",
-                         :country_name=>"United States of America", :id=>"dm", :region=>"Illinois", :extended_address=>nil, :updated_at=>time
-                        },
-                :created_at=>time, :expiration_month=>"12", :customer_id=>customer_id, :subscriptions=>[], :expiration_year=>"2012",
-                :default=>true, :token=>credit_card, :customer_location=>"US", :updated_at=>time, :bin=>"401200"
-               }
       }
     end
 
