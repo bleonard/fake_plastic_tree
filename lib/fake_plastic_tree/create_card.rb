@@ -26,6 +26,6 @@ module FakePlasticTree
                }
       }
     end
-    
+
   end
 end
