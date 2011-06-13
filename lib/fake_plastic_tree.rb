@@ -1,6 +1,7 @@
 require 'base64'
 require 'braintree'
 
+require 'fake_plastic_tree/create_customer'
 require 'fake_plastic_tree/auth_capture'
 require 'fake_plastic_tree/prior_auth_capture'
 require 'fake_plastic_tree/prior_auth_void'
@@ -8,15 +9,10 @@ require 'fake_plastic_tree/prior_auth_void'
 
 module FakePlasticTree
   class Gateway
+    extend CreateCustomer
     extend AuthCapture
     extend PriorAuthCapture
     extend PriorAuthVoid
-    
-
-    def self.create_customer(hash)
-      response = response_create_customer(hash)
-      customer_success(response)
-    end
 
     def self.create_card(hash)
       response = response_create_card(hash)
@@ -239,20 +235,6 @@ module FakePlasticTree
                                       }
                               }
                       }
-      }
-    end
-
-
-    def self.response_create_customer(hash)
-      customer_id = customer_id_from_hash(hash)
-      time = Time.now
-      first_name = hash[:first_name] || "Jen"
-      last_name = hash[:last_name] || "Smith"
-
-      {:customer=>
-               {:company=>nil, :first_name=>first_name, :created_at=>time, :last_name=>last_name, :addresses=>[], :email=>nil, :merchant_id=>merchant_id,
-                :credit_cards=>[], :phone=>nil, :updated_at=>time, :id=>customer_id, :website=>nil, :custom_fields=>"\n  ", :fax=>nil
-               }
       }
     end
 
