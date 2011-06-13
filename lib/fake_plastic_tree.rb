@@ -1,6 +1,8 @@
 require 'base64'
 require 'braintree'
 
+require 'fake_plastic_tree/account'
+
 require 'fake_plastic_tree/create_customer'
 require 'fake_plastic_tree/create_card'
 require 'fake_plastic_tree/auth_only'
@@ -11,6 +13,8 @@ require 'fake_plastic_tree/prior_auth_void'
 
 module FakePlasticTree
   class Gateway
+    extend Account
+    
     extend CreateCustomer
     extend CreateCard
     extend AuthOnly
@@ -19,18 +23,6 @@ module FakePlasticTree
     extend PriorAuthVoid
 
     protected
-
-    def self.merchant_id
-      Braintree::Configuration.merchant_id
-    end
-
-    def self.merchant_account_id
-      "my_merchant_account_id"
-    end
-
-    def self.status_history_user
-      "my_user_id"
-    end
 
     def self.transaction_success(response)
       Braintree::SuccessfulResult.new(:transaction => Braintree::Transaction._new(Braintree::Configuration.gateway, response[:transaction]))
