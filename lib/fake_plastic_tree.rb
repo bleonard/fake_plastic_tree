@@ -1,12 +1,9 @@
-require 'base64'
 require 'braintree'
 
 require 'fake_plastic_tree/account'
 require 'fake_plastic_tree/hashes'
-
 require 'fake_plastic_tree/customers'
 require 'fake_plastic_tree/transactions'
-
 
 require 'fake_plastic_tree/create_customer'
 require 'fake_plastic_tree/create_card'
@@ -20,7 +17,6 @@ module FakePlasticTree
   class Gateway
     extend Account
     extend Hashes
-    
     extend Customers
     extend Transactions
     
