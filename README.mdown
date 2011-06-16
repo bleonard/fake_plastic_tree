@@ -1,0 +1,34 @@
+# FakePlasticTree
+Braintree is a payment gateway with it's own gem and great support.
+
+We decided to abstract the gateway a little further for our specific uses and made a thin layer in front of that gem. This allowed us to mock those calls for faster and more dependable tests.
+
+FakePlasticTree is that mock and has some dynamic behaviors, for example remembering the amounts authorized to act appropriately on later capture. It provides the Gateway class with the following methods.
+
+## FakePlasticTree::Gateway
+	create_customer(hash)
+	create_card(hash)
+	auth_only(hash)
+	auth_capture(hash)
+	prior_auth_capture(transaction_id, amount)
+	prior_auth_void(transaction_id)
+	
+All hashes are the same ones used to talk to the Braintree gem.
+
+### Example Usage
+	customer = FakePlasticTree::Gateway.create_customer(:first_name => "Jen", :last_name => "Smith")
+	card = FakePlasticTree::Gateway.create_card(:customer_id => customer.id, 
+	                                            :number => "4012000033330026",
+	                                            :expiration_date => "12/2012", 
+	                                            :cvv => "123")
+	auth = FakePlasticTree::Gateway.auth_only(:amount => "100.00",
+	                                          :customer_id => customer.id, 
+	                                          :payment_method_token => card.id)
+                                          
+	result = FakePlasticTree::Gateway.prior_auth_capture(auth.transaction.id, "101.00")
+	result.should_not be_success
+
+	result = FakePlasticTree::Gateway.prior_auth_capture(auth.transaction.id, "100.00")
+	result.should be_success
+	
+	

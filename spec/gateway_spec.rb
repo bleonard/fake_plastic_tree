@@ -123,4 +123,23 @@ describe FakePlasticTree::Gateway do
       result.should be_success
     end
   end
+  
+  describe "Integration Test" do
+    it "should pass the readme example" do
+      customer = FakePlasticTree::Gateway.create_customer(:first_name => "Jen", :last_name => "Smith")
+      card = FakePlasticTree::Gateway.create_card(:customer_id => customer.id, 
+                                                  :number => "4012000033330026",
+                                                  :expiration_date => "12/2012", 
+                                                  :cvv => "123")
+      auth = FakePlasticTree::Gateway.auth_only(:amount => "100.00",
+                                                :customer_id => customer.id, 
+                                                :payment_method_token => card.id)
+                                                
+      result = FakePlasticTree::Gateway.prior_auth_capture(auth.transaction.id, "101.00")
+      result.should_not be_success
+      
+      result = FakePlasticTree::Gateway.prior_auth_capture(auth.transaction.id, "100.00")
+      result.should be_success               
+    end
+  end
 end
